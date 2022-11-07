@@ -24,7 +24,23 @@ public class OperatorCombineLatestJavaFX extends Application {
 	public void start(Stage stage) throws Exception {
 		buildUi(stage);
 
-		// TODO
+		PublishSubject<String> number1Subject = PublishSubject.create();
+		PublishSubject<String> number2Subject = PublishSubject.create();
+
+		numberInput1.setOnKeyTyped(event -> {
+			number1Subject.onNext(numberInput1.getText());
+		});
+
+		numberInput2.setOnKeyTyped(event -> {
+			number2Subject.onNext(numberInput2.getText());
+		});
+
+		Observable.combineLatest(
+						number1Subject.filter(s -> !"".equals(s)).map(Integer::parseInt),
+						number2Subject.filter(s -> !"".equals(s)).map(Integer::parseInt),
+						(i1, i2) -> i1 + i2)
+						.map(sum -> Integer.toString(sum))
+						.subscribe(sum -> output.setText(sum));
 	}
 
 	private void buildUi(Stage stage) {
